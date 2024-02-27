@@ -1,71 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Form Kontak</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Kontak</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
+
 <body>
-<div class="container py-5">
-    <h2 class="text-center mb-5">Form Kontak Kritik Estehibukota</h2>
-    <form name="form-kritik" action="/submit-form" method="POST" class="bg-light p-4 rounded-3 shadow">
-        <div class="mb-3">
-            <label for="nama" class="form-label">Nama:</label>
-            <input type="text" class="form-control" id="nama" name="nama" required>
+    <div class="container py-5">
+        <h2 class="text-center mb-5">Form Kontak Kritik Estehibukota</h2>
+        <form name="form-kritik" action="/submit-form" method="POST" class="bg-light p-4 rounded-3 shadow">
+            <div class="mb-3">
+                <label for="nama" class="form-label">Nama:</label>
+                <input type="text" class="form-control" id="nama" name="nama" required>
+            </div>
+            <div class="mb-3">
+                <label for="nomor-hp" class="form-label">Nomor HP:</label>
+                <input type="tel" class="form-control" id="nomor-hp" name="nomor-hp" required pattern="[0-9]{9,15}">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <div class="mb-3">
+                <label for="tujuan" class="form-label">Tujuan Menghubungi:</label>
+                <select class="form-select" id="tujuan" name="tujuan">
+                    <option value="Kerja Sama">Kerja Sama dengan Estehibukota</option>
+                    <option value="Pengaduan">Pengaduan Konten Estehibukota</option>
+                    <option value="Kritik">Kritik Dan Saran Estehibukota</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="keterangan" class="form-label">Keterangan:</label>
+                <textarea class="form-control" id="keterangan" name="keterangan" rows="4"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" onclick="showPopup()">Submit</button>
+        </form>
+        <div id="popup" class="modal d-flex align-items-center justify-content-center">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p>Terima kasih telah mengirim formulir!</p>
+                        <button class="btn btn-primary" onclick="resetForm()">OK</button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="nomor-hp" class="form-label">Nomor HP:</label>
-            <input type="tel" class="form-control" id="nomor-hp" name="nomor-hp" required pattern="[0-9]{9,15}">
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email:</label>
-            <input type="email" class="form-control" id="email" name="email">
-        </div>
-        <div class="mb-3">
-            <label for="tujuan" class="form-label">Tujuan Menghubungi:</label>
-            <select class="form-select" id="tujuan" name="tujuan">
-                <option value="Kerja Sama">Kerja Sama dengan Estehibukota</option>
-                <option value="Pengaduan">Pengaduan Konten Estehibukota</option>
-                <option value="Kritik">Kritik Dan Saran Estehibukota</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="keterangan" class="form-label">Keterangan:</label>
-            <textarea class="form-control" id="keterangan" name="keterangan" rows="4"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary" onclick="showPopup()">Submit</button>
-    </form>
-    <div id="popup" class="fixed inset-0 bg-black bg-opacity-50 d-flex justify-content-center align-items-center visually-hidden">
-        <div class="bg-white p-4 rounded shadow">
-            <p class="mb-3">Terima kasih telah mengirim formulir!</p>
-            <button class="btn btn-primary" onclick="resetForm()">OK</button>
-        </div>
+
     </div>
-</div>
-<script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx8M4ZsDQYpCM2xOWR-SltzVGxSdkfQytZkJpDvkZErIIt-gtb9lTajMvgkONWW8NkdNw/exec';
-    const form = document.forms['form-kritik'];
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbx8M4ZsDQYpCM2xOWR-SltzVGxSdkfQytZkJpDvkZErIIt-gtb9lTajMvgkONWW8NkdNw/exec';
+        const form = document.forms['form-kritik'];
+        const submitButton = form.querySelector('button[type="submit"]');
+        const popup = document.getElementById('popup');
 
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-            .then(response => {
-                console.log('Success!', response);
-                showPopup();
-            })
-            .catch(error => console.error('Error!', error.message));
-    });
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            if (submitButton.disabled) {
+                return; // Jika tombol sudah dinonaktifkan, keluar dari fungsi
+            }
+            submitButton.disabled = true; // Menonaktifkan tombol submit
+            fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+                .then(response => {
+                    console.log('Success!', response);
+                    showPopup();
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    submitButton.disabled = false; // Mengaktifkan tombol submit kembali
+                });
+        });
 
-    function showPopup() {
-        document.getElementById('popup').classList.remove('visually-hidden');
-    }
+        function showPopup() {
+            popup.classList.remove('visually-hidden');
+        }
 
-    function resetForm() {
-        document.getElementById('popup').classList.add('visually-hidden');
-        form.reset();
-    }
-</script>
+        function resetForm() {
+            popup.classList.add('visually-hidden');
+            form.reset();
+            submitButton.disabled = false; // Mengaktifkan tombol submit kembali setelah form direset
+        }
+
+        // Sembunyikan popup secara default
+        popup.classList.add('visually-hidden');
+
+    </script>
 </body>
+
 </html>
